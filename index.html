@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiagnostiCar - Painel Administrativo</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <span>DiagnostiCar</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" data-tela="tela-inicio">
+                <i class="fa-solid fa-microphone"></i> Início
+            </li>
+              <li class="menu-item" data-tela="tela-orcamentos">
+                <i class="fa-solid fa-dollar-sign"></i> Orçamentos
+            </li>
+            <li class="menu-item" data-tela="tela-novo-carro">
+                <i class="fa-solid fa-circle-plus"></i> Serviços
+            </li>
+           <a href="#" class="menu-item" data-tela="tela-balanco">
+             <i class="fa-solid fa-chart-line"></i> Balanço
+            </a>
+            <li class="menu-item" data-tela="tela-devedores">
+                <i class="fa-solid fa-user-slash"></i> Clientes
+            </li>
+            <li class="menu-item" data-tela="tela-config">
+                <i class="fa-solid fa-gear"></i> Configurações
+            </li>
+             <li class="menu-item" data-tela="tela-login-oficina">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Login / Sair
+            </li>
+        </ul>
+    </div>
+
+
+    <div id="tela-orcamentos" class="tela-container">
+        <div class="orcamento-layout">
+            
+            <div class="card-formulario">
+                <h3>Gerar Novo Orçamento</h3>
+                <form id="form-orcamento">
+                    <div class="campo-grupo">
+                        <label>Data do Serviço:</label>
+                        <input type="date" id="orc-data" required>
+                    </div>
+                    <div class="campo-grupo-duplo">
+                        <div class="campo-grupo">
+                            <label>Modelo do Carro:</label>
+                            <input type="text" id="orc-modelo" placeholder="Ex: Honda Civic" required>
+                        </div>
+                        <div class="campo-grupo">
+                            <label>Ano do Carro:</label>
+                            <input type="number" id="orc-ano" placeholder="Ex: 2022" required>
+                        </div>
+                    </div>
+                    <div class="campo-grupo">
+                        <label>Nome do Profissional:</label>
+                        <input type="text" id="orc-mecanico" placeholder="Seu Nome" required>
+                    </div>
+                    <div class="campo-grupo">
+                        <label>Serviço Realizado:</label>
+                        <textarea id="orc-servico" rows="4" placeholder="Descreva o que foi feito no carro..." required></textarea>
+                    </div>
+                    <div class="campo-grupo-duplo">
+                        <div class="campo-grupo">
+                            <label>Valor do Serviço (R$):</label>
+                            <input type="number" id="orc-valor" step="0.01" placeholder="0,00" required>
+                        </div>
+                        <div class="campo-grupo">
+                            <label>Tempo Estimado:</label>
+                            <input type="text" id="orc-tempo" placeholder="Ex: 3 horas" required>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="orc-botoes-acoes">
+                    <button type="button" id="btn-whatsapp" class="btn-acao btn-zap"><i class="fa-brands fa-whatsapp"></i> Enviar WhatsApp</button>
+                    <button type="button" id="btn-pdf" class="btn-acao btn-pdf"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</button>
+                    <button type="button" id="btn-imprimir" class="btn-acao btn-imprimir"><i class="fa-solid fa-print"></i> Imprimir</button>
+                </div>
+            </div>
+
+            <div class="card-preview">
+                <div class="folha-orcamento" id="documento-orcamento">
+                    <div class="doc-cabecalho">
+                        <div class="doc-logo">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            <span>DiagnostiCar</span>
+                        </div>
+                        <div class="doc-titulo">ORÇAMENTO DE SERVIÇO</div>
+                    </div>
+                    
+                    <hr class="doc-linha">
+
+                    <div class="doc-corpo">
+                        <p><strong>Data:</strong> <span id="view-data">--/--/----</span></p>
+                        <p><strong>Veículo:</strong> <span id="view-carro">------------------</span></p>
+                        <p><strong>Responsável Técnico:</strong> <span id="view-mecanico">------------------</span></p>
+                        
+                        <div class="doc-servico-box">
+                            <h4>Descrição do Serviço</h4>
+                            <p id="view-servico">Nenhum serviço descrito ainda...</p>
+                        </div>
+
+                        <div class="doc-valores">
+                            <p><strong>Tempo Estimado:</strong> <span id="view-tempo">--</span></p>
+                            <p class="doc-total"><strong>Valor Total:</strong> R$ <span id="view-valor">0,00</span></p>
+                        </div>
+                    </div>
+
+                    <div class="doc-rodape">
+                        <p><i class="fa-solid fa-location-dot"></i> Rua Mecânica Central, 123 - Capão Bonito/SP</p>
+                        <p><i class="fa-solid fa-phone"></i> (15) 99999-9999 | <i class="fa-brands fa-instagram"></i> @diagnosticar_oficina</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="main-content">
+        <div class="topbar">
+            <h2 id="nome-oficina-topo">Oficina Mecânica</h2>
+        </div>
+
+        <!-- ========================================================================== -->
+        <!-- 🔐 TELA DE LOGIN / CADASTRO DE OFICINA -->
+        <!-- ========================================================================== -->
+        <div id="tela-login-oficina" class="tela-container">
+            <div class="card" style="max-width: 450px; margin: 30px auto; padding: 30px;">
+                
+                <!-- Aba de Alternância entre Login e Cadastro -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0;">
+                    <button type="button" id="aba-btn-login" style="flex: 1; padding: 10px; border: none; background: none; font-weight: bold; color: #0284c7; border-bottom: 3px solid #0284c7; cursor: pointer;">
+                        🔑 Entrar
+                    </button>
+                    <button type="button" id="aba-btn-cadastrar" style="flex: 1; padding: 10px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer;">
+                        📝 Criar Conta
+                    </button>
+                </div>
+
+                <!-- FORMULÁRIO DE LOGIN -->
+                <form id="form-login-oficina">
+                    <h2 style="margin-top: 0; color: #1e293b;">Acessar Oficina</h2>
+                    <div class="campo-grupo" style="margin-bottom: 15px;">
+                        <label>E-mail:</label>
+                        <input type="email" id="login-email" placeholder="seu@email.com" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <div class="campo-grupo" style="margin-bottom: 20px;">
+                        <label>Senha:</label>
+                        <input type="password" id="login-senha" placeholder="******" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; background-color: #0284c7;">
+                        <i class="fa-solid fa-right-to-bracket"></i> Entrar no Sistema
+                    </button>
+                </form>
+
+                <!-- FORMULÁRIO DE CADASTRO (Oculto inicialmente) -->
+                <form id="form-cadastrar-oficina" style="display: none;">
+                    <h2 style="margin-top: 0; color: #1e293b;">Cadastrar Nova Oficina</h2>
+                    <div class="campo-grupo" style="margin-bottom: 12px;">
+                        <label>Nome da Oficina:</label>
+                        <input type="text" id="cad-nome-oficina" placeholder="Ex: Oficina do Danilo" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <div class="campo-grupo" style="margin-bottom: 12px;">
+                        <label>E-mail Corporativo:</label>
+                        <input type="email" id="cad-email" placeholder="oficina@email.com" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <div class="campo-grupo" style="margin-bottom: 12px;">
+                        <label>Senha de Acesso:</label>
+                        <input type="password" id="cad-senha" placeholder="******" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <div class="campo-grupo" style="margin-bottom: 20px;">
+                        <label>Telefone / WhatsApp:</label>
+                        <input type="text" id="cad-telefone" placeholder="(15) 99999-9999" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; background-color: #16a34a; border-color: #16a34a;">
+                        <i class="fa-solid fa-user-plus"></i> Finalizar Cadastro
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <div id="tela-inicio" class="tela-container active">
+            <div class="card">
+                <h1>Painel de Diagnóstico Inteligente</h1>
+                <p>Fale os sintomas do veículo para gerar a ordem de serviço.</p>
+               
+
+                <div class="btn-group">
+                    <button id="btnIniciar" class="btn btn-audio"><i class="fa-solid fa-microphone"></i> Iniciar Relato</button>
+                    <button id="btnParar" class="btn btn-danger" disabled><i class="fa-solid fa-stop"></i> Parar e Analisar</button>
+                </div>
+
+                <p id="status" class="status-pronto">Status: Pronto para ouvir</p>
+
+                <div class="laudo-box">
+                    <h3>Relatório da IA:</h3>
+                    <div id="resultado" class="resultado-box">O diagnóstico estruturado aparecerá aqui assim que você terminar de falar...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tela-novo-carro" class="tela-container">
+    
+            <div id="servicos-painel-inicial" class="card">
+                <h2><i class="fa-solid fa-gears"></i> Gerenciamento de Serviços</h2>
+                <p>Escolha o fluxo de atendimento para o veículo no pátio:</p>
+                
+                <div class="servicos-botoes-principais">
+                    <button id="btn-fluxo-novo" class="btn-servico-opcao">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>Novo Serviço</span>
+                        <small>Adicionar um novo serviço</small>
+                    </button>
+                    
+                    <button id="btn-fluxo-cliente" class="btn-servico-opcao">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span>Já é Cliente</span>
+                        <small>Consultar algum serviço já realizado</small>
+                    </button>
+
+                    <button id="btn-fluxo-nota" class="btn-servico-opcao">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Emitir Nota / Recibo</span>
+                        <small>Gere documentos oficiais ou avulsos</small>
+                    </button>
+                </div>
+                
+                <button id="btn-atalho-historico" class="btn-link-historico"><i class="fa-solid fa-list-check"></i> Ir para Histórico Geral de Serviços</button>
+            </div>
+
+            <div id="formulario-novo-servico" class="card" style="display: none;">
+                <div class="cabecalho-subtela">
+                    <button class="btn-voltar-painel"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <h2><i class="fa-solid fa-file-circle-plus"></i> Cadastro de Novo Veículo e Serviço</h2>
+                </div>
+
+                <form id="form-cadastro-veiculo-servico">
+                    <div class="campo-grupo-triplo">
+                        <div class="campo-grupo">
+                            <label>Placa do Veículo:</label>
+                            <input type="text" id="serv-placa" placeholder="Ex: ABC1D23" class="text-uppercase" required>
+                        </div>
+                        <div class="campo-grupo">
+                            <label>Modelo / Marca:</label>
+                            <input type="text" id="serv-modelo" placeholder="Ex: Corolla" required>
+                        </div>
+                        <div class="campo-grupo">
+                            <label>Ano:</label>
+                            <input type="number" id="serv-ano" placeholder="Ex: 2020" required>
+                        </div>
+                    </div>
+                    
+                    <div class="campo-grupo">
+                        <label>Primeiro Serviço Realizado:</label>
+                        <textarea id="serv-descricao" rows="4" placeholder="Descreva o conserto realizado..." required></textarea>
+                    </div>
+                    
+                    <div class="campo-grupo-duplo">
+                <div class="campo-grupo">
+                    <label>Valor Cobrado (R$):</label>
+                    <input type="number" id="serv-valor" step="0.01" placeholder="0,00" required>
+                </div>
+                <div class="campo-grupo">
+                    <label>Data da Execução:</label>
+                    <input type="date" id="serv-data" required>
+                </div>
+            </div>
+
+            <div class="campo-grupo">
+                <label class="label-campo">Forma de Pagamento:</label>
+                <div class="grupo-botoes-fluxo">
+                    <button type="button" id="btn-pag-vista" class="btn-opcao ativo">
+                        <span class="emoji-opcao">💵</span>
+                        <span>À Vista (Pago)</span>
+                    </button>
+                    <button type="button" id="btn-pag-prazo" class="btn-opcao">
+                        <span class="emoji-opcao">📝</span>
+                        <span>A Prazo (Fiado)</span>
+                    </button>
+                </div>
+                <input type="hidden" id="serv-forma-pagamento" value="A_VISTA">
+            </div>
+
+            <div id="bloco-cliente-fiado" class="secao-formulario" style="display: none; margin-top: 15px; border-color: #fca5a5; background-color: #fffdfd;">
+                <h4 class="titulo-secao" style="color: #dc2626; border-color: #fca5a5;">👤 Cadastro do Cliente Devedor</h4>
+                
+                <div class="linha-formulario">
+                    <div class="col-50">
+                        <label class="label-campo">Nome Completo:</label>
+                        <input type="text" id="fiado-cliente-nome" placeholder="Ex: Claudinei da Silva">
+                    </div>
+                    <div class="col-50">
+                        <label class="label-campo">Apelido (Opcional):</label>
+                        <input type="text" id="fiado-cliente-apelido" placeholder="Ex: Nei do Caminhão">
+                    </div>
+                </div>
+
+                <div class="linha-formulario">
+                    <div class="col-50">
+                        <label class="label-campo">CPF / CNPJ:</label>
+                        <input type="text" id="fiado-cliente-documento" placeholder="000.000.000-00">
+                    </div>
+                    <div class="col-50">
+                        <label class="label-campo">Telefone / Whats (Para cobrança):</label>
+                        <input type="text" id="fiado-cliente-telefone" placeholder="(15) 99999-9999">
+                    </div>
+                </div>
+            </div>
+                    
+                   <button type="submit" class="btn btn-primary" style="margin-top: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px;">
+    <i class="fa-solid fa-floppy-disk"></i> Salvar
+</button>
+                </form>
+            </div>
+
+            <div id="busca-cliente-servico" class="card" style="display: none;">
+                <div class="cabecalho-subtela">
+                    <button class="btn-voltar-painel"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <h2><i class="fa-solid fa-user-gear"></i> Histórico de Cliente Ativo</h2>
+                </div>
+                
+                <div class="busca-input-box" style="display: flex; gap: 10px; align-items: center; max-width: 500px; margin: 25px 0;">
+                    <input type="text" id="busca-placa-cliente" placeholder="Digite a placa do cliente..." class="text-uppercase" 
+                           style="flex: 1; padding: 12px 16px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; height: 46px; box-sizing: border-box;">
+                    
+                    <button id="btn-executar-busca-cliente" class="btn-buscar-acoes" 
+                            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 24px; font-size: 16px; font-weight: 600; color: #ffffff; background-color: #1e293b; border: none; border-radius: 6px; cursor: pointer; height: 46px; white-space: nowrap; box-sizing: border-box;">
+                        <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                    </button>
+                </div>
+
+                <div id="resultado-busca-cliente" style="display: none; margin-top: 25px;">
+                    <div class="info-carro-badge">
+                        <p>🚘 <strong id="carro-cliente-nome">Honda Civic</strong> | Ano: <span id="carro-cliente-ano">2018</span> | Placa: <span id="carro-cliente-placa" class="badge-placa">FFF1234</span></p>
+                    </div>
+                    
+                    <h3>Selecione os Serviços para o Relatório PDF:</h3>
+                    <div id="lista-servicos-selecionaveis" class="lista-check-box"></div>
+                    
+                    <button id="btn-gerar-pdf-selecionados" class="btn-acao btn-pdf" style="margin-top: 20px; width: 100%;">
+                        <i class="fa-solid fa-file-pdf"></i> Gerar Relatório dos Serviços Selecionados
+                    </button>
+                </div>
+            </div>
+
+            <div id="subtela-emissao-recibo" class="subtela-recibo" style="display: none;">
+                <div class="recibo-header">
+                    <h3><i class="fa-solid fa-file-invoice"></i> Módulo de Nota / Recibo Oficial</h3>
+                    <button type="button" class="btn-voltar-painel" id="btn-cancelar-recibo-fluxo">⬅️ Cancelar</button>
+                </div>
+
+                <div id="recibo-passo-1">
+                    <p class="instrucao-texto">O serviço deste recibo já está cadastrado no sistema?</p>
+                    
+                    <div class="grupo-botoes-fluxo">
+                        <button type="button" id="btn-recibo-sim" class="btn-opcao">🟢 Sim, buscar pelo carro</button>
+                        <button type="button" id="btn-recibo-nao" class="btn-opcao">🔵 Não, serviço avulso / novo</button>
+                    </div>
+
+                    <div id="bloco-busca-placa-recibo" class="bloco-interno-oculto" style="display: none;">
+                        <label class="label-campo">Digite a Placa do Veículo:</label>
+                        <div class="grupo-busca">
+                            <input type="text" id="recibo-placa-busca" placeholder="ABC1D23" class="text-uppercase" maxlength="7">
+                            <button type="button" id="btn-buscar-servicos-recibo" class="btn-acao-busca">🔍 Buscar Histórico</button>
+                        </div>
+
+                        <div id="lista-servicos-recibo-container" class="lista-container-oculta" style="display: none;">
+                            <p class="sub-instrucao">Selecione o serviço específico para a Nota:</p>
+                            <div id="lista-servicos-recibo-radios" class="lista-radios">
+                                </div>
+                        </div>
+                    </div>
+
+                    <div id="bloco-avancar-passo-1" class="bloco-acao-avancar" style="display: none;">
+                        <button type="button" id="btn-avancar-recibo" class="btn-avancar">Avançar ➡️</button>
+                    </div>
+                </div>
+
+                <div id="recibo-passo-2" class="bloco-passo-2" style="display: none;">
+                    <form id="form-recibo-final" class="formulario-flex">
+                        
+                        <div class="secao-formulario">
+                            <h4 class="titulo-secao">Dados da Empresa (Tomador do Serviço)</h4>
+                            <div class="linha-formulario">
+                                <div class="col-70">
+                                    <label class="label-campo">Razão Social / Nome da Empresa:</label>
+                                    <input type="text" id="rec-cliente-nome" placeholder="Ex: Transportadora Capão Bonito LTDA" required>
+                                </div>
+                                <div class="col-30">
+                                    <label class="label-campo">CNPJ / CPF:</label>
+                                    <input type="text" id="rec-cliente-documento" placeholder="00.000.000/0001-00" required>
+                                </div>
+                            </div>
+                            <div class="linha-formulario">
+                                <div class="col-100">
+                                    <label class="label-campo">E-mail da Empresa (Opcional):</label>
+                                    <input type="email" id="rec-cliente-email" placeholder="financeiro@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="bloco-dados-servico-recibo" class="secao-formulario">
+                            <h4 class="titulo-secao">Descrição dos Serviços Prestados</h4>
+                            <div class="linha-formulario">
+                                <div class="col-100">
+                                    <label class="label-campo">Descrição Detalhada do Serviço:</label>
+                                    <textarea id="rec-servico-descricao" rows="3" placeholder="Descreva o que foi feito..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="linha-formulario">
+                                <div class="col-50">
+                                    <label class="label-campo">Valor do Serviço (R$):</label>
+                                    <input type="number" step="0.01" id="rec-servico-valor" placeholder="0,00" required>
+                                </div>
+                                <div class="col-50">
+                                    <label class="label-campo">Data da Execução:</label>
+                                    <input type="date" id="rec-servico-data" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bloco-acao-gerar">
+                            <button type="submit" class="btn-sucesso">🖨️ Gerar Recibo Oficial (PDF)</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="tela-carros" class="tela-container">
+            <div class="card">
+                <h2><i class="fa-solid fa-car"></i> Prontuário do Veículo</h2>
+                
+                <div class="busca-container">
+                    <input type="text" id="campoBuscaPlaca" placeholder="Digite a placa (ex: 1234ABC)" class="input-padrao text-uppercase">
+                    <button id="btnBuscarProntuario" class="btn btn-primary">Consultar Prontuário</button>
+                </div>
+
+                <div id="dadosDoVeiculo" class="dados-veiculo-box" style="display: none;">
+                    <h3>Veículo Identificado</h3>
+                    <p><strong>Modelo/Marca:</strong> <span id="prontuarioModelo">---</span></p>
+                    <p><strong>Ano:</strong> <span id="prontuarioAno">---</span></p>
+                    <p><strong>Placa:</strong> <span id="prontuarioPlaca" class="badge-placa">---</span></p>
+                </div>
+
+                <div id="listaProntuario">
+                    <p class="txt-ajuda">Digite uma placa para puxar o histórico do veículo.</p>
+                </div>
+            </div>
+        </div>
+
+       <!-- ========================================================================== -->
+<!-- 👤 TELA DE CONSULTA DE CLIENTES DEVEDORES -->
+<!-- ========================================================================== -->
+<div id="tela-devedores" class="tela-container">
+    <div class="card">
+        <h2><i class="fa-solid fa-user-slash"></i> Consulta de Clientes Devedores (Fiado)</h2>
+        <p>Consulte a situação financeira de um cliente buscando por Nome, Apelido ou CPF/CNPJ.</p>
+        
+        <!-- Barra de Busca -->
+        <div class="busca-container" style="display: flex; gap: 10px; margin: 20px 0;">
+            <input type="text" id="campoBuscaDevedor" placeholder="Digite o nome, apelido ou documento..." class="input-padrao" style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <button id="btnBuscarDevedor" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600; background-color: #dc2626; border-color: #dc2626; color: white; cursor: pointer;">
+                <i class="fa-solid fa-magnifying-glass"></i> Consultar Pendências
+            </button>
+        </div>
+
+        <!-- Card Vermelho: Pendência Identificada -->
+        <div id="resultadoDevedor" class="dados-veiculo-box" style="display: none; border-left: 5px solid #dc2626; padding: 20px; background-color: #fffdfd; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="color: #dc2626; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Pendência Financeira Identificada
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <p style="margin: 5px 0;"><strong>Cliente:</strong> <span id="devNome">---</span></p>
+                <p style="margin: 5px 0;"><strong>Apelido:</strong> <span id="devApelido">---</span></p>
+                <p style="margin: 5px 0;"><strong>CPF / CNPJ:</strong> <span id="devDocumento">---</span></p>
+                <p style="margin: 5px 0;"><strong>Telefone:</strong> <span id="devTelefone">---</span></p>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #fee2e2; margin: 15px 0;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; background-color: #fee2e2; padding: 15px; border-radius: 6px;">
+                <div>
+                    <p style="margin: 0; color: #991b1b; font-size: 14px;">VALOR EM ABERTO</p>
+                    <h2 style="margin: 5px 0 0 0; color: #991b1b; font-size: 28px;" id="devValor">R$ 0,00</h2>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a id="btnCobrarWhatsapp" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background-color: #25d366; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                        <i class="fa-brands fa-whatsapp"></i> Enviar Cobrança
+                    </a>
+                    <button id="btnRegistrarPagamento" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #0284c7; color: white; padding: 10px 18px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer;">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Pagamento
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Verde: Sem Pendências -->
+        <div id="resultadoLimpo" class="dados-veiculo-box" style="display: none; border-left: 5px solid #16a34a; padding: 20px; background-color: #f0fdf4; border-radius: 6px; margin-top: 15px;">
+            <h3 style="color: #16a34a; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-check"></i> Tudo Certo!
+            </h3>
+            <p style="margin: 5px 0; color: #166534;" id="msgClienteLimpo">Cliente não possui nenhuma pendência financeira registrada no sistema.</p>
+        </div>
+
+    </div> <!-- Fecha <div class="card"> -->
+</div> <!-- Fecha <div id="tela-devedores"> -->
+
+<!-- ========================================================================== -->
+<!-- 📊 TELA DE BALANÇO FINANCEIRO -->
+<!-- ========================================================================== -->
+<div id="tela-balanco" class="tela-container">
+    <div class="card">
+        <h2><i class="fa-solid fa-chart-pie"></i> Balanço Financeiro da Oficina</h2>
+        <p>Resumo em tempo real do faturamento e contas a receber.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 25px;">
+            
+            <!-- Card 1: Total Movimentado -->
+            <div style="background: #f8fafc; border-left: 5px solid #0284c7; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <span style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase;">Total Movimentado</span>
+                <h2 id="balanco-total-geral" style="color: #0f172a; margin: 10px 0 0 0; font-size: 26px;">R$ 0,00</h2>
+            </div>
+
+            <!-- Card 2: Recebido à Vista -->
+            <div style="background: #f0fdf4; border-left: 5px solid #16a34a; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <span style="color: #166534; font-size: 13px; font-weight: 600; text-transform: uppercase;">Recebido (À Vista)</span>
+                <h2 id="balanco-total-vista" style="color: #15803d; margin: 10px 0 0 0; font-size: 26px;">R$ 0,00</h2>
+            </div>
+
+            <!-- Card 3: Fiado a Receber -->
+            <div style="background: #fffdfd; border-left: 5px solid #dc2626; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <span style="color: #991b1b; font-size: 13px; font-weight: 600; text-transform: uppercase;">A Receber (Fiado)</span>
+                <h2 id="balanco-total-fiado" style="color: #b91c1c; margin: 10px 0 0 0; font-size: 26px;">R$ 0,00</h2>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+            <button id="btnAtualizarBalanco" type="button" class="btn btn-primary" style="background-color: #0284c7; border: none; padding: 10px 18px; border-radius: 6px; color: white; cursor: pointer; font-weight: 600;">
+                <i class="fa-solid fa-arrows-rotate"></i> Atualizar Dados
+            </button>
+        </div>
+    </div>
+</div>
+
+        <!-- Card Verde: Sem Pendências -->
+        <div id="resultadoLimpo" class="dados-veiculo-box" style="display: none; border-left: 5px solid #16a34a; padding: 20px; background-color: #f0fdf4; border-radius: 6px; margin-top: 15px;">
+            <h3 style="color: #16a34a; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-check"></i> Tudo Certo!
+            </h3>
+            <p style="margin: 5px 0; color: #166534;" id="msgClienteLimpo">Cliente não possui nenhuma pendência financeira registrada no sistema.</p>
+        </div>
+    </div>                
+                <!-- Texto de ajuda inicial -->
+                <div id="ajudaDevedor">
+                    <p class="txt-ajuda" style="color: #64748b; font-style: italic;">Digite um dado acima para verificar se há alguma conta pendente (Fiado) cadastrada para o cliente.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================================================== -->
+<!-- 💵 MODAL / POP-UP DE REGISTRO DE PAGAMENTO -->
+<!-- ========================================================================== -->
+<div id="modalPagamento" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; animation: fadeIn 0.2s ease-in-out;">
+        
+        <h3 style="margin-top: 0; color: #1e293b; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #0284c7; padding-bottom: 10px;">
+            <i class="fa-solid fa-hand-holding-dollar" style="color: #0284c7;"></i> Registrar Pagamento
+        </h3>
+
+        <form id="formModalPagamento" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #475569;">Valor Recebido (R$):</label>
+                <input type="number" id="pagValorInput" step="0.01" placeholder="0,00" required style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-radius;">
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #475569;">Data do Pagamento:</label>
+                <input type="date" id="pagDataInput" required style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-radius;">
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                <button type="button" id="btnFecharModalPag" style="padding: 10px 18px; border: 1px solid #cbd5e1; background-color: #f1f5f9; color: #475569; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    Cancelar
+                </button>
+                <button type="submit" style="padding: 10px 18px; border: none; background-color: #0284c7; color: #ffffff; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    <i class="fa-solid fa-check"></i> Confirmar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+        <div id="tela-config" class="tela-container">
+            <div class="card">
+                <h2><i class="fa-solid fa-gear"></i> Perfil da Oficina</h2>
+                <p>Gerencie as informações que aparecerão nos relatórios e PDFs.</p>
+                <p style="color: #666; font-style: italic;">Área em desenvolvimento...</p>
+            </div>
+
+            <div id="painel-inicial-configuracoes" style="padding: 20px;">
+    <h2>⚙️ Configurações do Sistema</h2>
+    <p style="color: #64748b; margin-bottom: 25px;">Selecione o módulo administrativo que deseja gerenciar:</p>
+
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        
+        <div id="btn-subtela-perfil" style="flex: 1; min-width: 250px; max-width: 300px; padding: 25px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s;">
+            <div style="font-size: 32px; margin-bottom: 10px;">🏢</div>
+            <h3 style="margin: 0 0 8px 0; color: #1e293b;">Perfil da Oficina</h3>
+            <p style="margin: 0; font-size: 13px; color: #64748b;">Dados cadastrais, contatos e logotipo para o laudo PDF.</p>
+        </div>
+
+        <div id="btn-subtela-moderacao" style="flex: 1; min-width: 250px; max-width: 300px; padding: 25px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); text-align: center; opacity: 0.6; cursor: not-allowed;">
+            <div style="font-size: 32px; margin-bottom: 10px;">🛠️</div>
+            <h3 style="margin: 0 0 8px 0; color: #1e293b;">Moderar Registros</h3>
+            <p style="margin: 0; font-size: 13px; color: #64748b;">Corrigir erros de digitação em placas ou deletar serviços antigos.</p>
+        </div>
+
+    </div>
+</div>
+
+<div id="subtela-formulario-perfil" style="display: none; padding: 20px; max-width: 700px; position: relative; z-index: 10;">
+    
+    <button type="button" id="btn-voltar-config-geral" style="padding: 6px 12px; margin-bottom: 20px; border: 1px solid #cbd5e1; background: #fff; border-radius: 4px; cursor: pointer; font-weight: 600;">⬅️ Voltar</button>
+    
+    <form id="form-config-oficina" style="display: flex; flex-direction: column; gap: 15px;">
+        
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 2;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Nome da Oficina:</label>
+                <input type="text" id="cfg-nome" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" required disabled>
+            </div>
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">CNPJ:</label>
+                <input type="text" id="cfg-cnpj" placeholder="00.000.000/0001-00" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" disabled>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Telefone / WhatsApp:</label>
+                <input type="text" id="cfg-telefone" placeholder="(15) 99999-9999" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" disabled>
+            </div>
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">E-mail de Contato:</label>
+                <input type="email" id="cfg-email" placeholder="oficina@email.com" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" disabled>
+            </div>
+        </div>
+
+        <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Endereço Completo:</label>
+            <input type="text" id="cfg-endereco" placeholder="Rua, Número - Bairro - Cidade/SP" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" disabled>
+        </div>
+
+        <div>
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Mensagem Padrão do Rodapé do PDF:</label>
+            <input type="text" id="cfg-rodape" placeholder="Ex: Garantia de 3 meses para serviços executados." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" disabled>
+        </div>
+
+        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; border: 1px dashed #cbd5e1; display: flex; align-items: center; gap: 20px; margin-top: 5px;">
+            <div style="flex: 1;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Logotipo da Oficina:</label>
+                <input type="file" id="cfg-logo-file" accept="image/*" style="font-size: 14px;" disabled>
+            </div>
+            <div id="preview-logo-box" style="width: 80px; height: 80px; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; background-color: #fff; overflow: hidden;">
+                <span id="preview-placeholder" style="font-size: 11px; color: #94a3b8; text-align: center; padding: 5px;">Sem Logo</span>
+                <img id="preview-logo-img" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+            <button type="button" id="btn-cfg-editar" style="padding: 10px 20px; font-weight: 600; background-color: #1e293b; color: #fff; border: none; border-radius: 6px; cursor: pointer;">✏️ Editar Perfil</button>
+            <button type="submit" id="btn-cfg-salvar" style="padding: 10px 20px; font-weight: 600; background-color: #2ecc71; color: #fff; border: none; border-radius: 6px; cursor: pointer; display: none;">💾 Salvar Alterações</button>
+            <button type="button" id="btn-cfg-cancelar" style="padding: 10px 20px; font-weight: 600; background-color: #e74c3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; display: none;">❌ Cancelar</button>
+        </div>
+
+    </form>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    ...
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/audio.js"></script>
+    <script src="assets/js/prontuario.js"></script>
+    <script src="assets/js/orcamento.js"></script>
+    <script src="assets/js/servicos.js"></script>
+    <script src="assets/js/devedores.js"></script>
+    <script src="assets/js/login.js"></script>
+    <script src="assets/js/configuracoens.js"></script>
+    <script src="assets/js/balanco.js"></script>
+</body>
+</html>
