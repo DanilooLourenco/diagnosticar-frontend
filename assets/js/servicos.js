@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const botoesVoltar = document.querySelectorAll('.btn-voltar-painel');
 
     // URL base da sua API Spring Boot no IntelliJ
-    const API_URL = 'https://diagnosticar-api.onrender.com';
+    const API_URL = 'https://diagnosticar-api.onrender.com/api/diagnosticos';
 
     // Elementos internos do fluxo de Recibo/Nota
     const reciboPasso1 = document.getElementById('recibo-passo-1');
