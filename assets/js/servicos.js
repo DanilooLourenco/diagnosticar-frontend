@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (erro) {
                 console.error('Erro ao salvar serviço:', erro);
-                alert('Não foi possível gravar o serviço. Verifique se o IntelliJ está rodando.');
+                alert("ERRO DETALHADO: " + erro.message);
             }
         });
     }
