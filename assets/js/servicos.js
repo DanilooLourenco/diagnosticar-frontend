@@ -538,7 +538,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 alert(`Veículo ${modelo} (${placa}) e serviço gravados no MySQL com sucesso!`);
                 
+                if (formularioNovo && typeof formularioNovo.reset === 'function') {
                 formularioNovo.reset();
+                } else {
+                formularioNovo.querySelectorAll('input, textarea').forEach(campo => campo.value = '');
+}
                 if (botoesVoltar[0]) botoesVoltar[0].click(); // Volta para o painel inicial do app
 
             } catch (erro) {
