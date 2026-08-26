@@ -532,8 +532,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(payload)
                 });
 
-                if (!resposta.ok) throw new Error('Falha ao registrar serviço no servidor.');
-
+                if (!resposta.ok) {
+                const erroApi = await resposta.text();
+                throw new Error(`Status ${resposta.status}: ${erroApi}`);
+                }
                 alert(`Veículo ${modelo} (${placa}) e serviço gravados no MySQL com sucesso!`);
                 
                 formularioNovo.reset();
