@@ -81,13 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
         devValor.textContent = valorFormatado;
 
         if (devedor.telefone) {
-            const numeroLimpo = devedor.telefone.replace(/\D/g, '');
-            const mensagem = encodeURIComponent(`Olá ${devedor.nome}, tudo bem? Passando para lembrar do seu saldo em aberto na nossa oficina no valor de ${valorFormatado}. Como prefere fazer o acerto?`);
-            btnCobrarWhatsapp.href = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
-            btnCobrarWhatsapp.style.display = 'inline-flex';
-        } else {
-            btnCobrarWhatsapp.style.display = 'none';
-        }
+        const numeroLimpo = devedor.telefone.replace(/\D/g, '');
+        const numeroFinal = numeroLimpo.startsWith('55') ? numeroLimpo : `55${numeroLimpo}`;
+        const mensagem = encodeURIComponent(`Olá ${devedor.nome}, tudo bem? Passando para lembrar do seu saldo em aberto.`);
+        
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        btnCobrarWhatsapp.href = isMobile 
+            ? `whatsapp://send?phone=${numeroFinal}&text=${mensagem}`
+            : `https://web.whatsapp.com/send?phone=${numeroFinal}&text=${mensagem}`;
+            
+        btnCobrarWhatsapp.style.display = 'inline-flex';
+    } else {
+        btnCobrarWhatsapp.style.display = 'none';
+    }
     }
 
     function mostrarTelaClienteLimpo(termo) {

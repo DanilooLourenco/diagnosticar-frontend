@@ -70,8 +70,13 @@ ${inputServico.value}
 _Ficamos no aguardo da sua aprovação!_`
         );
 
-        // Abre o link do WhatsApp Web ou App do celular
-        window.open(`https://api.whatsapp.com/send?text=${textoZap}`, "_blank");
+       // Abre direto no aplicativo do celular ou no WhatsApp Web no PC
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+if (isMobile) {
+    window.location.href = `whatsapp://send?text=${textoZap}`;
+} else {
+    window.open(`https://web.whatsapp.com/send?text=${textoZap}`, "_blank");
+}
     });
 
     // ==========================================================================
